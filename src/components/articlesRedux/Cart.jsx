@@ -8,6 +8,8 @@ getTotals,
 removeFromCart,
 } from "../../features/cartSlice";
 import { Link } from "react-router-dom";
+import Api from "../axios/Api";
+import { loadStripe } from '@stripe/stripe-js';
 const Cart = () => {
 const cart = useSelector((state) => state.storecart);
 const dispatch = useDispatch();
@@ -32,15 +34,38 @@ dispatch(removeFromCart(product));
 const handleClearCart = useCallback(() => {
 dispatch(clearCart());
 }, [dispatch])
+const [status, setStatus] = useState("idle");
+async function handleClickStripe(event) {
+event.preventDefault();
+if (cartTotal > 0) {
+setStatus("loading");
+try {
+const stripe = await loadStripe(' pk_test_51P8MtNP0JLtWcHYb2efO94br998SS6cTuFzFQ1EN5ET6bNijK38OMTLY3CVza3u2T7fV32gCQAYrCdNl5hlfFuHS00kqS1QITV ');
+
+if (!stripe) throw new Error('Stripe failed to initialize.');
+const checkoutResponse = await Api.post('payment', {cart})
+const {sessionId} = await checkoutResponse.data;
+const stripeError = await stripe.redirectToCheckout({sessionId});
+if (stripeError) {
+console.error(stripeError);
+}
+} catch (error) {
+console.error(error);
+setStatus("redirect-error");
+}
+} else {
+setStatus("no-items");
+}
+}
 return (
-    <div className='App'>
+   
 <div className="cart-container">
 <h2>Shopping Cart</h2>
 {cart.cartItems.length === 0 ? (
 <div className="cart-empty">
 <p>Panier Vide</p>
 <div className="start-shopping">
-<Link to="/">
+<Link to="/articles">
 <span>Start Shopping</span>
 </Link>
 </div>
@@ -99,7 +124,7 @@ TND</span>
 <p>Taxes and shipping calculated at checkout</p>
 <button>Check out</button>
 <div className="continue-shopping">
-<Link to="/">
+<Link to="/articles">
 <span>Continue Shopping</span>
 </Link>
 </div>
@@ -108,7 +133,7 @@ TND</span>
 </div>
 )}
 </div>
-</div>
+
 );
 };
 export default Cart;

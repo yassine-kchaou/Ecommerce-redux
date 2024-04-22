@@ -38,14 +38,14 @@ const Createarticle = () =>{
   useEffect(() => {
     dispatch(getScategories());
   }, [dispatch]);
-  const handleSubmit = (url) => {
+  const handleSubmit = (e) => {
     const article = {
       reference: reference,
       designation: designation,
       prix: prix,
       marque: marque,
       qtestock: qtestock,
-      imageart: url,
+      imageart: imageart,
       scategorieID: scategorieID,
     }
     dispatch(createArticle(article))
@@ -69,23 +69,7 @@ const Createarticle = () =>{
       });
     }
     
-  const handleUpload = (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    if (form.checkValidity() === true) {
-      if (file) {
-        if (!file[0].file) {
-          alert("Please upload an image first!");
-        } else {
-          console.log(file[0].file);
-          resultHandleUpload(file[0].file, event);
-        }
-      } else {
-        alert("Please upload an image first!");
-      }
-      setValidated(true);
-    }
-  };
+ 
   // server options
   const serverOptions = () => {
     console.log("server pond");
@@ -124,29 +108,10 @@ const Createarticle = () =>{
     };
   };
   //result handle upload
-  const resultHandleUpload = async (file) => {
-    try {
-      const data = new FormData();
-      data.append("file", file);
-      data.append("upload_preset", "firstuse");
-      data.append("cloud_name", "dliykgknn");
-      data.append("public_id", file.name); // Replace 'dliykgknn' with your Cloudinary cloud name
-
-      const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dliykgknn/image/upload",
-        data
-      );
-      const imageUrl = response.data.url; // Assuming the image URL is in the 'url' property of the response data
-      setImageart(imageUrl);
-      handleClose();
-      handleSubmit(imageUrl);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      // You can add further error handling here, such as displaying an error message to the user
-    }
-  };
+  
+  
   return (
-    <>
+    <div className="App">
       <Button
         onClick={handleShow}
         variant="success"
@@ -157,7 +122,7 @@ const Createarticle = () =>{
         &nbsp; Nouveau
       </Button>
       <Modal show={show} onHide={handleClose}>
-        <Form noValidate validated={validated} onSubmit={handleUpload}>
+        <Form noValidate validated={validated} >
           <Modal.Header closeButton>
             <Modal.Title>
            
@@ -281,7 +246,7 @@ const Createarticle = () =>{
           </Modal.Footer>
         </Form>
       </Modal>
-    </>
+    </div>
   );
                           };
 export default Createarticle;

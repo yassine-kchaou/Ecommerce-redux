@@ -14,9 +14,6 @@ const [showModal, setShowModal] = useState(false);
 const {articles,isLoading,error} = useSelector((state)=>state.storearticles);
 const [selectedItem, setSelectedItem] = useState(null);
 const handleClose= () => {
-
-
-
 setShowModal(false);
 setSelectedItem(null);
 }
@@ -128,7 +125,7 @@ if (isLoading) return <center><ReactLoading type='spokes' color="red"
 height={'8%'} width={'8%'} /></center>
 if (error) return <p>Impossible d'afficher la liste des articles...</p>
 return (
-<>
+<div className='App'>
 <div>
 <MaterialReactTable columns={columns} data={articles} />;
 </div>
@@ -139,7 +136,7 @@ handleClose={handleClose}
 art={selectedItem}
 />
 )}
-</>
+</div>
 )
 }
 export default AfficheAerticleTable
